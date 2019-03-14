@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tedu.store.mapper.UserMapper">
+
+	<select id="getUserById" parameterType="Integer" resultType="cn.tedu.store.bean.User">
+	      select 
+	      		*  
+	      from 
+	      	   t_user
+	      where user_id = #{user_id}
+	</select>
+	
+	<select id="getUserByUserName" parameterType="String" resultType="cn.tedu.store.bean.User">
+	      select
+	           user_id         ,
+	           user_name       ,
+	           user_pwd   ,
+	           user_email      ,
+	           user_phone      ,
+	           user_image      ,
+	           user_gender     ,
+	           created_user    ,
+	           created_time    ,
+	           modified_user   ,
+	           modified_time   
+	      from 
+	      	   t_user
+	      where user_name = #{user_name}
+     
+	</select>
+	
+	<select id="getUserByUserPhone" parameterType="String" resultType="cn.tedu.store.bean.User">
+	      select 
+	      		*  
+	      from 
+	      	   t_user
+	      where user_phone = #{user_phone}
+     
+	</select>
+	
+	<select id="getUserByUserEmail" parameterType="String" resultType="cn.tedu.store.bean.User">
+	      select
+	           * 
+	      from 
+	      	   t_user
+	      where user_email = #{user_email}
+     
+	</select>
+
+	<insert id="insertUser" parameterType="cn.tedu.store.bean.User">
+		insert into t_user(
+			    user_name,
+			    user_pwd,
+			    user_email,
+			    user_phone,
+			    user_image,
+			    user_gender,
+			    created_user,
+			    created_time,
+			    modified_user,
+			    modified_time)
+	    values (
+				#{user_name}, 
+				#{user_pwd},
+				#{user_email},
+				#{user_phone},
+				#{user_image},
+				#{user_gender},
+				#{created_user},
+				#{created_time},
+				#{modified_user},
+				#{modified_time})
+	</insert>
+	
+	<!--更新用户  -->
+	<update id="updateUser" parameterType="cn.tedu.store.bean.User">
+		update t_user 
+		<set>
+			<if test="user_name!=null">user_name=#{user_name},</if>
+			<if test="user_pwd!=null">user_pwd=#{user_pwd},</if>
+			<if test="user_phone!=null">user_phone=#{user_phone},</if>
+			<if test="user_image!=null">user_image=#{user_image},</if>
+			<if test="user_email!=null">user_email=#{user_email},</if>
+			<if test="user_gender!=null">user_gender=#{user_gender},</if>
+			<if test="modified_user!=null">modified_user=#{modified_user},</if>
+			<if test="modified_time!=null">modified_time=#{modified_time}</if>
+		</set>
+		where user_id=#{user_id}
+	</update>
+	
+</mapper>
+

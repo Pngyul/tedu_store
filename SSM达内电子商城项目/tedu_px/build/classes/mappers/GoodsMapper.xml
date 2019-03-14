@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.GoodsMapper">
+
+	<!-- 获取某分类下的商品列表 -->
+	<!-- List<Goods> getListByCategory(
+		    @Param("categoryId") Long categoryId, 
+		    @Param("offset") Integer offset, 
+		    @Param("count") Integer count) -->
+	<select id="getListByCategory"
+		resultType="cn.tedu.store.bean.Goods">
+		SELECT 
+			id, image, title, price,item_type as itemType
+		FROM 
+			t_goods
+		WHERE 
+			category_id=#{categoryId} AND status=1
+		ORDER BY 
+			priority DESC 
+		LIMIT
+			#{offset}, #{count}
+	</select>
+
+	<!-- 根据商品id获取商品数据 -->
+	<!-- Goods getGoodsById(Long id) -->
+	<select id="getGoodsById"
+		resultType="cn.tedu.store.bean.Goods">
+		SELECT 
+			id, image, title, price,
+			category_id AS categoryId,
+			item_type AS itemType,
+			sell_point AS sellPoint,
+			num, barcode, status, priority
+		FROM 
+			t_goods
+		WHERE 
+			id=#{id}
+	</select>
+<!--	List<Goods> getSearchList(@Param("keyWord")String keyWord, 
+							  @Param("offset")Integer offset, 
+							  @Param("count")Integer count); -->
+<select id="getSearchList"
+		resultType="cn.tedu.store.bean.Goods">
+		SELECT 
+			id, image, title, price,
+			category_id AS categoryId,
+			item_type AS itemType,
+			sell_point AS sellPoint,
+			num, barcode, status, priority
+		FROM 
+			t_goods
+		WHERE 
+			title like "%"#{keyWord}"%"
+		ORDER BY 
+			priority DESC 
+		LIMIT
+			#{offset}, #{count}
+	</select>
+	
+	<!-- Integer getCountByKeyWord(@Param("keyWord")String keyWord); -->
+	<select id="getCountByKeyWord"
+		resultType="java.lang.Integer">
+		SELECT 
+			COUNT(*)
+		FROM 
+			t_goods
+		WHERE 
+			title like "%"#{keyWord}"%"
+	</select>
+	
+	
+	
+</mapper>
+
+
+
+
+
+
+
+

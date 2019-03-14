@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+encoding//WebContent/web/addressAdmin.jsp=UTF-8
+encoding//WebContent/web/orders.jsp=UTF-8
+encoding//src/cn/tedu/store/service/impl/OrderServiceImpl.java=UTF-8

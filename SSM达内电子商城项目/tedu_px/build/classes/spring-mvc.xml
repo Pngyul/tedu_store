@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:component-scan base-package="cn.tedu.store.controller"></context:component-scan>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置逻辑视图的前缀 -->
+		<property name="prefix" value="/web/"></property>
+		<!-- 配置逻辑视图的后 -->
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	<!-- 注解驱动 -->
+	
+	<mvc:annotation-driven></mvc:annotation-driven>
+	<!-- 配置上传文件的组件idmultipartResolver -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置默认编码 -->
+		<property name="defaultEncoding" value="utf-8"></property>
+		<!-- 10m -->
+		<property name="maxUploadSize" value="10000000"></property>
+	</bean>
+	
+	<mvc:interceptors >
+	
+		<mvc:interceptor>
+			<mvc:mapping path="/user/*" />
+			<mvc:mapping path="/cart/*" />
+			<mvc:mapping path="/collect/*" />
+			<mvc:mapping path="/address/*" />
+			<mvc:mapping path="/order/*" />
+			<mvc:exclude-mapping path="/user/showLogin.do"/>
+			<mvc:exclude-mapping path="/user/showRegister.do"/>
+			<mvc:exclude-mapping path="/user/checkUserName.do"/>
+			<mvc:exclude-mapping path="/user/checkUserEmail.do"/>
+			<mvc:exclude-mapping path="/user/checkUserPhone.do"/>
+			<mvc:exclude-mapping path="/user/register.do"/>
+			<mvc:exclude-mapping path="/user/login.do"/>
+			<bean class="cn.tedu.store.intercepter.LoginIntercepter"></bean>
+		</mvc:interceptor>
+		
+	</mvc:interceptors>
+
+</beans>

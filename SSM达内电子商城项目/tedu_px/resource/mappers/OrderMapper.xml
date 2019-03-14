@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.OrderMapper">
+
+	<!-- 插入订单数据 -->
+	<!-- Integer insertOrder(Order order) -->
+	<insert id="insertOrder"
+		parameterType="cn.tedu.store.bean.Order"
+		useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_order (
+			uid,
+			recv_name,
+			recv_phone,
+			recv_address,
+			total_price,
+			status,
+			create_time,
+			pay_time,
+			created_user,
+			created_time,
+			modified_user,
+			modified_time
+		) VALUES (
+			#{uid},
+			#{recvName},
+			#{recvPhone},
+			#{recvAddress},
+			#{totalPrice},
+			#{status},
+			#{createTime},
+			#{payTime},
+			#{createdUser},
+			#{createdTime},
+			#{modifiedUser},
+			#{modifiedTime}
+		)
+	</insert>
+
+	<!-- 插入订单商品数据 -->
+	<!-- Integer insertOrderItem(OrderItem orderItem) -->
+	<insert id="insertOrderItem"
+		parameterType="cn.tedu.store.bean.OrderItem"
+		useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO t_order_item (
+			order_id,
+			goods_id,
+			goods_image,
+			goods_title,
+			goods_price,
+			goods_num,
+			created_user,
+			created_time,
+			modified_user,
+			modified_time
+		) VALUES (
+			#{orderId},
+			#{goodsId},
+			#{goodsImage},
+			#{goodsTitle},
+			#{goodsPrice},
+			#{goodsNum},
+			#{createdUser},
+			#{createdTime},
+			#{modifiedUser},
+			#{modifiedTime}
+		)
+	</insert>
+	
+	<!-- 查询的resultMap -->
+	<!-- type：对应的VO类 -->
+	<!-- id：自定义标识 -->
+	<resultMap type="cn.tedu.store.vo.OrderVO" 
+		id="OrderVOMap">
+		<!-- id节点对应的是查询主表的自增长主键 -->
+		<!-- column：数据表中的字段名 -->
+		<!-- property：VO类中的属性名 -->
+		<id column="id" property="id" />
+		<!-- result节点配置非id字段 -->
+		<result column="recv_name" property="recvName"/>
+		<result column="recv_phone" property="recvPhone"/>
+		<!-- 1对多的集合，使用collection -->
+		<!-- ofType：集合中的元素的类型 -->
+		<collection property="orderItems"
+			ofType="cn.tedu.store.bean.OrderItem">
+			<!-- property：ofType对应的类型中的属性名 -->
+			
+			<result column="goods_title" property="goodsTitle"/>
+		</collection>
+	</resultMap>
+	
+	<!--  -->
+	<!-- resultMap：以上配置的<resultMap>节点的id -->
+	<select id="getOrder"
+		resultMap="OrderVOMap">
+		SELECT 
+			o.id, 
+			o.recv_name, 
+			o.recv_phone, 
+			oi.goods_title 
+		FROM 
+			t_order AS o 
+		INNER JOIN 
+			t_order_item AS oi
+		ON 
+			o.id = oi.order_id
+	</select>
+	
+	
+	<!-- Integer changeState(@Param("uid") Integer uid,
+						@Param("id") Integer id,
+						@Param("payTime")Date payTime); -->
+	<update id="changeState">
+	  update t_order
+	  		set status = 2 ,
+	  		pay_time=#{payTime}
+	  where 
+	  		uid=#{uid} and  id=#{id}
+	</update>
+	
+	
+	<!-- Order orderInfo(Integer uid, Integer id); -->
+	<select id="orderInfo" resultType="cn.tedu.store.bean.Order">
+	SELECT 
+		id, 
+		uid,
+		recv_name AS recvName,
+		recv_phone AS recvPhone,
+		recv_address AS recvAddress,
+		total_price AS totalPrice,
+		status AS status,
+		create_time AS createTime,
+		pay_time AS payTime
+	 FROM 
+	 	t_order
+	 where id=#{id} and uid=#{uid}
+	</select>
+	
+	
+	<!-- List<OrderItem> getOrderItem(@Param("id") Integer id); -->
+	<select id="getOrderItem" resultType="cn.tedu.store.bean.OrderItem">
+		SELECT 
+			id AS id ,
+			order_id AS orderId,
+			goods_id AS goodsId,
+			goods_image AS goodsImage,
+			goods_title AS goodsTitle,
+			goods_price AS goodsPrice,
+			goods_num AS goodsNum,
+			created_time AS createdTime
+		FROM t_order_item
+		
+		WHERE
+			order_id=#{oid}
+	</select>
+	
+	<!-- Integer[] getOidByUid(@Param("uid") Integer uid); -->
+	<select id="getOidByUid" resultType="java.lang.Integer">
+		SELECT 
+			id  
+		FROM 
+			t_order 
+		WHERE 
+			uid=#{uid}
+	</select>
+	
+<!-- Integer getCountByOid(@Param("oids")Integer[] oids); -->
+	<select id="getCountByOid"
+		resultType="java.lang.Integer">
+		 SELECT 
+		 	COUNT(*) 
+		 FROM 
+		 	t_order_item 
+		 WHERE 
+		 	order_id IN 
+		 	<foreach collection="oids" separator="," item="oid"
+				open="(" close=")">
+				#{oid}
+			</foreach>
+	</select>
+	
+<!-- 		List<OrderItem> getOrderItems(@Param("oids")Integer[] oids, 
+							@Param("offset")Integer offset, 
+							@Param("count")Integer count); -->
+							
+	<select id="getOrderItems" resultType="cn.tedu.store.bean.OrderItem">
+		SELECT 
+			id AS id ,
+			order_id AS orderId,
+			goods_id AS goodsId,
+			goods_image AS goodsImage,
+			goods_title AS goodsTitle,
+			goods_price AS goodsPrice,
+			goods_num AS goodsNum,
+			created_time AS createdTime
+		FROM t_order_item
+		
+		WHERE 
+			order_id IN 
+			<foreach collection="oids" separator="," item="oid"
+				open="(" close=")">
+				#{oid}
+			</foreach> 
+			
+		ORDER BY id DESC
+		LIMIT #{offset}, #{count} 
+	</select>
+</mapper>
+
+
+
+
+
+
+
+

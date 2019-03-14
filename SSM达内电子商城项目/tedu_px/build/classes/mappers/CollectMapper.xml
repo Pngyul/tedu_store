@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.CollectMapper">
+
+	<!-- Integer insert(Collection collect); -->
+	<insert id="insert" parameterType="cn.tedu.store.bean.Collection">
+		INSERT INTO t_collection (
+			goods_id,
+			created_time,
+			created_user,
+			uid
+		) VALUES (
+			#{goodsId},
+			#{createdTime},
+			#{createdUser},
+			#{uid}
+		)
+	</insert>
+	
+		<!-- 查询的resultMap -->
+	<!-- type：对应的VO类 -->
+	<!-- id：自定义标识 -->
+	<resultMap type="cn.tedu.store.vo.CollectionVO" 
+		id="collectionVO">
+		<!-- id节点对应的是查询主表的自增长主键 -->
+		<!-- column：数据表中的字段名 -->
+		<!-- property：VO类中的属性名 -->
+		<id column="id" property="id" />
+		
+		<association property="goods" javaType="cn.tedu.store.bean.Goods">
+        <!-- id:声明主键，表示goods_id是关联查询对象的唯一标识-->
+        <id property="id" column="goods_id" />
+        <!-- result节点配置非id字段 -->
+        	<result column="title" property="title"/>
+			<result column="price" property="price"/>
+			<result column="image" property="image"/>
+    	</association>
+	</resultMap>
+	
+	
+	<!-- 获取购物车数据列表 -->
+	<!-- List<Collection> getList(@Param("uid")Integer uid); -->
+	<select id="getList" resultMap="collectionVO">
+		SELECT 
+			c.id, 
+			g.title, 
+			g.price, 
+			g.image, 
+			g.id as goods_id
+		FROM 
+			t_collection AS c 
+		INNER JOIN 
+			t_goods AS g
+		ON 
+			c.goods_id = g.id
+    	WHERE 
+    		c.uid = #{uid}
+	</select>
+	
+	
+<!-- Integer delete(Integer uid, Long[] ids); -->
+ 	<delete id="delete" >
+	  	delete from t_collection
+	  	where
+	  		uid=#{uid} AND 
+	  		id IN
+			<foreach collection="ids" separator="," item="id"
+				open="(" close=")">
+				#{id}
+			</foreach>
+	</delete>
+	
+</mapper>
+
+
+
+
+
+
+
+
